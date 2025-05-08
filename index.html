@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Christmas Greetings</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: url('https://images.unsplash.com/photo-1543701603-ce2e9f2b3381') no-repeat center center fixed;
+      background-size: cover;
+      color: white;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: center;
+      min-height: 100vh;
+      backdrop-filter: brightness(0.5);
+    }
+
+    h1 {
+      font-size: 3em;
+      margin: 0.5em 0;
+      color: #FF4C4C;
+    }
+
+    p {
+      font-size: 1.4em;
+      max-width: 600px;
+      margin: 1em auto;
+      font-style: italic;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.6);
+      padding: 2em;
+      border-radius: 20px;
+      box-shadow: 0 0 25px 10px rgba(255, 0, 0, 0.3);
+      max-width: 90%;
+      margin: 2em;
+    }
+
+    .content-box, .photo-box {
+      margin: 1.5em auto 0;
+      font-size: 1.2em;
+      background-color: rgba(255, 255, 255, 0.15);
+      padding: 1.5em;
+      border: 2px dashed #fff;
+      border-radius: 20px;
+      max-width: 90%;
+      box-sizing: border-box;
+    }
+
+    .content-box a,
+    .photo-box a {
+      color: #ffe;
+      font-weight: bold;
+      text-decoration: none;
+      display: block;
+      margin-top: 1em;
+      cursor: pointer;
+    }
+
+    .content-box p,
+    .photo-box p {
+      font-size: 1em;
+    }
+
+    .photo-box {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .photo-box img {
+      max-width: 200px;
+      border-radius: 10px;
+      margin-top: 1em;
+      display: none;
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .photo-description {
+      display: none;
+      margin-top: 0.5em;
+      font-size: 1em;
+      color: #ffe;
+      font-style: italic;
+    }
+
+    .snowflake {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+      background-image: url('https://www.transparenttextures.com/patterns/snow.png');
+      animation: snow 10s linear infinite;
+    }
+
+    @keyframes snow {
+      0% { background-position: 0px 0px; }
+      100% { background-position: 500px 1000px; }
+    }
+
+    .audio-player {
+      position: relative;
+      margin-top: 1em;
+      background: rgba(255, 255, 255, 0.2);
+      padding: 10px;
+      border-radius: 10px;
+      max-width: 90%;
+      z-index: 10000;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 2em;
+      }
+      p {
+        font-size: 1em;
+      }
+      .overlay, .content-box, .photo-box {
+        padding: 1em;
+      }
+      .audio-player {
+        padding: 0.5em;
+      }
+    }
+  </style>
+  <script>
+    function togglePhoto(id, descId) {
+      const img = document.getElementById(id);
+      const desc = document.getElementById(descId);
+      const isVisible = img.style.display === 'block';
+      img.style.display = isVisible ? 'none' : 'block';
+      desc.style.display = isVisible ? 'none' : 'block';
+    }
+  </script>
+</head>
+<body>
+  <div class="audio-player">
+    <audio controls autoplay loop>
+      <source src="Jingle Bells with Lyrics _ Christmas Songs HD _ Christmas Songs and Carols(MP3_128K).mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio>
+  </div>
+
+  <div class="snowflake"></div>
+
+  <div class="overlay">
+    <h1>🎄 Merry Christmas 2026 & 2027, My Love ❤️🤍</h1>
+    <p>To the girl I loved and had to let go,</p>
+    <p>Though we are apart, I still prepared these gifts for you — for both Christmas 2026 and 2027. May these years bring you warmth, joy, and peace. You’ll always have a special place in my heart, even as we welcome new chapters apart.</p>
+    <p>— With love, Aaron</p>
+
+    <div class="photo-box">
+      🎁 Christmas 2026 Gift:
+      <a href="#" onclick="togglePhoto('gift-photo1', 'desc1'); return false;">Click to reveal your first gift</a>
+      <img id="gift-photo1" src="20250421_173737.jpg" alt="Christmas 2026 Gift" />
+      <p id="desc1" class="photo-description">Christmas 2026 gift 🎁 — ito yung una kong Funkopop, binigay ko sayo dahil punong-puno ng totoong feelings. Advance ko na ibinigay kasi baka hindi ko na magawa next time. ❤️</p>
+    </div>
+
+    <div class="photo-box">
+      🎁 Christmas 2027 Gift:
+      <a href="#" onclick="togglePhoto('gift-photo2', 'desc2'); return false;">Click to reveal your second gift</a>
+      <img id="gift-photo2" src="1746685128965.jpg" alt="Christmas 2027 Gift" />
+      <p id="desc2" class="photo-description">Christmas 2027 gift 🎁 — Merry Christmas love sana kasya at magustuhan mo binilhan ko lahat kayo ng mga pinsan at tita ko. 🤍🎄</p>
+    </div>
+  </div>
+</body>
+</html>
