@@ -131,12 +131,13 @@
             try {
                 // Access global Firebase config and app ID variables, provide defaults for local testing
                 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-                    apiKey: "YOUR_FIREBASE_API_KEY", // REPLACE WITH YOUR ACTUAL API KEY FROM FIREBASE PROJECT SETTINGS
-                    authDomain: "YOUR_FIREBASE_PROJECT_ID.firebaseapp.com",
-                    projectId: "YOUR_FIREBASE_PROJECT_ID",
-                    storageBucket: "YOUR_FIREBASE_PROJECT_ID.appspot.com",
-                    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-                    appId: "YOUR_FIREBASE_APP_ID"
+                    apiKey: "AIzaSyB5QsjH9wMINY2tHWpoycJUsqBCyw-9ihw",
+                    authDomain: "chat-9e913.firebaseapp.com",
+                    projectId: "chat-9e913",
+                    storageBucket: "chat-9e913.firebasestorage.app",
+                    messagingSenderId: "472247605564",
+                    appId: "1:472247605564:web:ef37cb5c32f0eae53ba639"
+                    // measurementId is not needed for core functionality and can be omitted
                 };
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
                 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
