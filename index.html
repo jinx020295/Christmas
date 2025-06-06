@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Love Chat Room</title>
-    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Poppins and Dancing Script fonts for a romantic feel -->
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         body {
@@ -46,7 +44,6 @@
     </div>
 
     <div id="chat-container" class="hidden w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[90vh] border-4 border-rose-200">
-        <!-- Chat Header -->
         <div class="bg-gradient-to-r from-rose-500 to-purple-600 text-white p-4 rounded-t-2xl shadow-lg flex justify-between items-center">
             <h1 class="text-3xl font-bold romantic-title">My Love</h1>
             <div class="text-sm opacity-90">
@@ -54,16 +51,19 @@
             </div>
         </div>
 
-        <!-- Message Display Area -->
         <div id="message-area" class="flex-1 p-4 overflow-y-auto space-y-3 bg-rose-50 message-area">
             <div id="no-messages-placeholder" class="text-center text-rose-500 mt-10 text-lg">
                 No sweet whispers yet. Send the first message!
             </div>
-            <!-- Messages will be appended here by JavaScript -->
-        </div>
+            </div>
 
-        <!-- Message Input Area -->
         <div class="p-4 bg-white border-t border-rose-200 flex items-center space-x-3 rounded-b-2xl">
+            <label for="image-upload" class="cursor-pointer bg-rose-300 hover:bg-rose-400 text-white p-3 rounded-full shadow-md transition duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <input type="file" id="image-upload" accept="image/*" class="hidden">
+            </label>
             <input
                 type="text"
                 id="new-message-input"
@@ -74,22 +74,23 @@
                 id="send-message-button"
                 class="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2"
             >
-                Send Message
+                Send
             </button>
         </div>
     </div>
 
-    <!-- Firebase SDKs -->
     <script type="module">
         // Import Firebase modules from CDN
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
         // Global Firebase instances and user ID
         let app;
         let db;
         let auth;
+        let storage; // Add storage instance
         let userId = '';
 
         // DOM elements
@@ -100,6 +101,7 @@
         const newMessageInput = document.getElementById('new-message-input');
         const sendMessageButton = document.getElementById('send-message-button');
         const noMessagesPlaceholder = document.getElementById('no-messages-placeholder');
+        const imageUploadInput = document.getElementById('image-upload'); // New: Image upload input
 
         // Function to scroll to the bottom of the message area
         function scrollToBottom() {
@@ -109,27 +111,38 @@
         // Function to handle sending a new message
         async function handleSendMessage() {
             const messageText = newMessageInput.value.trim();
-            if (messageText === '' || !db || !userId) return;
+            const imageFile = imageUploadInput.files[0]; // Get the selected image file
+
+            if (messageText === '' && !imageFile) return; // Don't send empty messages or if no file is selected
+            if (!db || !userId) return;
 
             try {
-                // Access global __app_id variable, provide a default if not defined (for local testing)
                 const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                let imageUrl = null;
+
+                if (imageFile) {
+                    // Upload image to Firebase Storage
+                    const storageRef = ref(storage, `artifacts/${appId}/public/images/${Date.now()}_${imageFile.name}`);
+                    const snapshot = await uploadBytes(storageRef, imageFile);
+                    imageUrl = await getDownloadURL(snapshot.ref);
+                    imageUploadInput.value = ''; // Clear the file input
+                }
+
                 await addDoc(collection(db, `artifacts/${appId}/public/data/chat_messages`), {
                     text: messageText,
+                    imageUrl: imageUrl, // Store image URL
                     userId: userId,
-                    timestamp: serverTimestamp(), // Use server timestamp for consistency
+                    timestamp: serverTimestamp(),
                 });
-                newMessageInput.value = ''; // Clear the input field
+                newMessageInput.value = ''; // Clear the text input field
             } catch (error) {
                 console.error("Error sending message:", error);
-                // In a real app, you might show a user-friendly error message here
             }
         }
 
         // Initialize Firebase and set up listeners
         window.onload = async function () {
             try {
-                // Access global Firebase config and app ID variables, provide defaults for local testing
                 const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
                     apiKey: "AIzaSyB5QsjH9wMINY2tHWpoycJUsqBCyw-9ihw",
                     authDomain: "chat-9e913.firebaseapp.com",
@@ -146,6 +159,7 @@
                 app = initializeApp(firebaseConfig);
                 db = getFirestore(app);
                 auth = getAuth(app);
+                storage = getStorage(app); // Initialize storage
 
                 // Sign in with custom token or anonymously
                 if (initialAuthToken) {
@@ -206,23 +220,34 @@
                         senderText.className = 'font-semibold text-sm';
                         senderText.textContent = msg.userId === userId ? 'Me' : `My Love (${msg.userId.substring(0, 8)}...)`;
 
-                        const messageContent = document.createElement('p');
-                        messageContent.className = 'mt-1 text-base break-words';
-                        messageContent.textContent = msg.text;
+                        messageBubble.appendChild(senderText);
 
+                        // Display image if available
+                        if (msg.imageUrl) {
+                            const imgElement = document.createElement('img');
+                            imgElement.src = msg.imageUrl;
+                            imgElement.alt = "Sent image";
+                            imgElement.className = 'max-w-full h-auto rounded-md mt-2 mb-2'; // Tailwind classes for image
+                            messageBubble.appendChild(imgElement);
+                        }
+
+                        // Display text message if available
+                        if (msg.text) {
+                            const messageContent = document.createElement('p');
+                            messageContent.className = 'mt-1 text-base break-words';
+                            messageContent.textContent = msg.text;
+                            messageBubble.appendChild(messageContent);
+                        }
+                        
                         const timestampText = document.createElement('p');
                         timestampText.className = 'text-xs opacity-80 mt-1 text-right';
                         if (msg.timestamp) {
-                            // Convert Firestore Timestamp to Date object
                             const date = msg.timestamp.toDate();
-                            timestampText.textContent = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+                            // Format date and time
+                            timestampText.textContent = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
                         }
-
-                        messageBubble.appendChild(senderText);
-                        messageBubble.appendChild(messageContent);
-                        if (msg.timestamp) {
-                            messageBubble.appendChild(timestampText);
-                        }
+                        messageBubble.appendChild(timestampText);
+                        
                         messageElement.appendChild(messageBubble);
                         messageArea.appendChild(messageElement);
                     });
@@ -239,6 +264,10 @@
             if (e.key === 'Enter') {
                 handleSendMessage();
             }
+        });
+        // Listen for changes on the image input to allow sending with just an image
+        imageUploadInput.addEventListener('change', () => {
+            // Optionally, you can add a visual indicator here that a file is selected
         });
     </script>
 </body>
