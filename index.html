@@ -3,117 +3,729 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Love Chat Room</title>
+    <title>Reyna & Aaron 💕</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
+        * { box-sizing: border-box; }
+
         body {
             font-family: 'Poppins', sans-serif;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            background: linear-gradient(to bottom right, #fce7f3, #ffe4e6, #e0f2fe); /* Soft romantic gradient */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ffe4f0 0%, #f3e7ff 50%, #e8f4ff 100%);
         }
+
         .romantic-title {
             font-family: 'Dancing Script', cursive;
         }
-        /* Custom scrollbar for message area */
-        .message-area::-webkit-scrollbar {
-            width: 8px;
+
+        /* ── PIN GATE ── */
+        #gate {
+            width: 100%;
+            max-width: 420px;
+            padding: 1.5rem;
         }
-        .message-area::-webkit-scrollbar-track {
-            background: #fdf2f8; /* Light pink track */
-            border-radius: 10px;
+
+        .gate-card {
+            background: white;
+            border-radius: 28px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 12px 60px rgba(220, 80, 120, 0.12);
+            border: 1.5px solid rgba(220, 80, 120, 0.1);
         }
-        .message-area::-webkit-scrollbar-thumb {
-            background: #fbcfe8; /* Soft pink thumb */
-            border-radius: 10px;
+
+        .heart-anim {
+            font-size: 56px;
+            display: block;
+            animation: pulse 1.4s infinite;
+            margin-bottom: 0.5rem;
         }
-        .message-area::-webkit-scrollbar-thumb:hover {
-            background: #f9a8d4; /* Slightly darker pink on hover */
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.18); }
+        }
+
+        .gate-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 36px;
+            color: #c0396a;
+            margin-bottom: 0.2rem;
+        }
+
+        .gate-sub {
+            font-size: 13px;
+            color: #a06080;
+            margin-bottom: 1.8rem;
+        }
+
+        .name-btns {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 1.4rem;
+        }
+
+        .name-btn {
+            flex: 1;
+            padding: 11px 0;
+            border-radius: 50px;
+            border: 2px solid #e8a0c0;
+            background: white;
+            color: #c0396a;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .name-btn.selected,
+        .name-btn:hover {
+            background: linear-gradient(90deg, #e8609a, #a855f7);
+            color: white;
+            border-color: transparent;
+        }
+
+        .pin-label {
+            font-size: 13px;
+            color: #a06080;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .pin-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 50px;
+            border: 1.5px solid #e8a0c0;
+            font-size: 22px;
+            text-align: center;
+            letter-spacing: 10px;
+            color: #c0396a;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            margin-bottom: 0.5rem;
+            transition: border-color 0.2s;
+        }
+
+        .pin-input:focus { border-color: #c0396a; }
+
+        .pin-input.error {
+            border-color: #e24b4a;
+            animation: shake 0.3s;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-7px); }
+            75% { transform: translateX(7px); }
+        }
+
+        .error-msg {
+            color: #e24b4a;
+            font-size: 12px;
+            min-height: 18px;
+            margin-bottom: 0.5rem;
+        }
+
+        .enter-btn {
+            width: 100%;
+            padding: 13px;
+            border-radius: 50px;
+            border: none;
+            background: linear-gradient(90deg, #e8609a, #a855f7);
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            transition: opacity 0.2s, transform 0.1s;
+            margin-top: 8px;
+        }
+
+        .enter-btn:hover { opacity: 0.9; transform: scale(1.02); }
+
+        /* ── CHAT ROOM ── */
+        #chatroom {
+            display: none;
+            width: 100%;
+            max-width: 680px;
+            height: 90vh;
+            max-height: 780px;
+            flex-direction: column;
+            border-radius: 28px;
+            overflow: hidden;
+            box-shadow: 0 16px 60px rgba(160, 60, 120, 0.18);
+            border: 1.5px solid rgba(200, 80, 140, 0.12);
+            background: linear-gradient(135deg, #fff0f7 0%, #f8f0ff 50%, #f0f7ff 100%);
+        }
+
+        .chat-header {
+            background: linear-gradient(90deg, #e8609a 0%, #a855f7 100%);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+        }
+
+        .chat-header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .avatar-circle {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.25);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            border: 2px solid rgba(255,255,255,0.4);
+        }
+
+        .chat-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 26px;
+            color: white;
+            line-height: 1;
+        }
+
+        .chat-user-tag {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 2px;
+        }
+
+        .music-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 50px;
+            padding: 6px 14px;
+            color: white;
+            font-size: 12px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .music-btn:hover { background: rgba(255, 255, 255, 0.3); }
+
+        .music-icon { font-size: 14px; }
+
+        /* Messages */
+        .messages-area {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .messages-area::-webkit-scrollbar { width: 6px; }
+        .messages-area::-webkit-scrollbar-track { background: transparent; }
+        .messages-area::-webkit-scrollbar-thumb { background: #f0b0d0; border-radius: 10px; }
+
+        .system-msg {
+            text-align: center;
+            font-size: 11px;
+            color: #b080a0;
+            padding: 5px 14px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 20px;
+            align-self: center;
+        }
+
+        .msg-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .msg-row.mine { flex-direction: row-reverse; }
+
+        .msg-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .msg-avatar.reyna { background: #ffd0e8; color: #c0396a; }
+        .msg-avatar.aaron { background: #d8c0ff; color: #7c3aed; }
+
+        .bubble {
+            max-width: 65%;
+            padding: 10px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+            line-height: 1.5;
+            position: relative;
+        }
+
+        .bubble.theirs {
+            background: white;
+            color: #5a2060;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 2px 10px rgba(180, 60, 120, 0.08);
+        }
+
+        .bubble.mine {
+            background: linear-gradient(135deg, #e8609a, #a855f7);
+            color: white;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bubble-name {
+            font-size: 10px;
+            opacity: 0.6;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+
+        .bubble-img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-top: 6px;
+            margin-bottom: 4px;
+        }
+
+        .bubble-time {
+            font-size: 10px;
+            opacity: 0.6;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        /* Input */
+        .chat-input-area {
+            padding: 12px 16px;
+            background: white;
+            border-top: 1px solid rgba(200, 80, 140, 0.1);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .img-upload-label {
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fce7f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            flex-shrink: 0;
+            transition: background 0.2s;
+        }
+
+        .img-upload-label:hover { background: #f9d0e8; }
+
+        .chat-input {
+            flex: 1;
+            padding: 10px 16px;
+            border-radius: 50px;
+            border: 1.5px solid #e8a0c0;
+            font-size: 14px;
+            color: #5a2060;
+            outline: none;
+            font-family: 'Poppins', sans-serif;
+            transition: border-color 0.2s;
+            background: #fff8fc;
+        }
+
+        .chat-input:focus { border-color: #c0396a; }
+        .chat-input::placeholder { color: #d0a0c0; }
+
+        .send-btn {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #e8609a, #a855f7);
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s, opacity 0.2s;
+            flex-shrink: 0;
+        }
+
+        .send-btn:hover { transform: scale(1.08); }
+        .send-btn:active { transform: scale(0.95); }
+
+        /* Particles */
+        .particle {
+            position: fixed;
+            pointer-events: none;
+            font-size: 16px;
+            animation: floatUp 2.2s ease-out forwards;
+            z-index: 9999;
+        }
+
+        @keyframes floatUp {
+            0% { opacity: 1; transform: translateY(0) scale(1); }
+            100% { opacity: 0; transform: translateY(-80px) scale(0.4); }
+        }
+
+        /* No messages */
+        #no-messages-placeholder {
+            text-align: center;
+            color: #c090b0;
+            font-size: 14px;
+            margin-top: 40px;
+        }
+
+        /* Facebook-style date divider */
+        .date-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0 4px;
+            align-self: stretch;
+        }
+
+        .date-divider::before,
+        .date-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(200, 80, 140, 0.15);
+        }
+
+        .date-divider span {
+            font-size: 11px;
+            color: #b080a0;
+            white-space: nowrap;
+            background: rgba(255,255,255,0.6);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        /* Facebook-style hover timestamp under bubble */
+        .bubble-time {
+            font-size: 10px;
+            opacity: 0.6;
+            text-align: right;
+            margin-top: 4px;
+        }
+
+        .msg-row:hover .full-timestamp {
+            display: block;
+        }
+
+        .full-timestamp {
+            display: none;
+            font-size: 10px;
+            color: #b080a0;
+            text-align: center;
+            margin-top: 3px;
+            align-self: center;
         }
     </style>
 </head>
-<body class="bg-gradient-to-br from-pink-100 via-rose-100 to-purple-100">
+<body>
 
-    <div id="loading-screen" class="fixed inset-0 flex items-center justify-center bg-pink-50 z-50">
-        <div class="text-xl font-semibold text-pink-700">Kindling the conversation...</div>
+    <!-- ── LOADING ── -->
+    <div id="loading-screen" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:#fff0f7;z-index:50;">
+        <div style="text-align:center;">
+            <div style="font-size:48px;animation:pulse 1.4s infinite;">💕</div>
+            <div style="font-family:'Dancing Script',cursive;font-size:24px;color:#c0396a;margin-top:12px;">Loading your love space...</div>
+        </div>
     </div>
 
-    <div id="chat-container" class="hidden w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col h-[90vh] border-4 border-rose-200">
-        <div class="bg-gradient-to-r from-rose-500 to-purple-600 text-white p-4 rounded-t-2xl shadow-lg flex justify-between items-center">
-            <h1 class="text-3xl font-bold romantic-title">My Love</h1>
-            <div class="text-sm opacity-90">
-                Your Secret ID: <span id="user-id-display" class="font-mono bg-rose-700 px-2 py-1 rounded-md text-xs"></span>
+    <!-- ── PIN GATE ── -->
+    <div id="gate" style="display:none;">
+        <div class="gate-card">
+            <span class="heart-anim">💖</span>
+            <div class="gate-title">Our Secret Place</div>
+            <div class="gate-sub">A private chat for two 🌸</div>
+
+            <div class="name-btns">
+                <button class="name-btn selected" id="btn-reyna" onclick="selectName('Reyna')">Reyna</button>
+                <button class="name-btn" id="btn-aaron" onclick="selectName('Aaron')">Aaron</button>
             </div>
+
+            <span class="pin-label">Enter your PIN</span>
+            <input type="password" class="pin-input" id="pin-input" maxlength="4" placeholder="••••"
+                   oninput="clearErr()" onkeydown="if(event.key==='Enter') tryEnter()">
+            <div class="error-msg" id="err-msg"></div>
+            <button class="enter-btn" onclick="tryEnter()">Enter with love ✨</button>
         </div>
+    </div>
 
-        <div id="message-area" class="flex-1 p-4 overflow-y-auto space-y-3 bg-rose-50 message-area">
-            <div id="no-messages-placeholder" class="text-center text-rose-500 mt-10 text-lg">
-                No sweet whispers yet. Send the first message!
+    <!-- ── CHAT ROOM ── -->
+    <div id="chatroom">
+        <div class="chat-header">
+            <div class="chat-header-left">
+                <div class="avatar-circle">💕</div>
+                <div>
+                    <div class="chat-title">Reyna & Aaron</div>
+                    <div class="chat-user-tag" id="logged-as-tag">Logged in as —</div>
+                </div>
             </div>
-            </div>
-
-        <div class="p-4 bg-white border-t border-rose-200 flex items-center space-x-3 rounded-b-2xl">
-            <label for="image-upload" class="cursor-pointer bg-rose-300 hover:bg-rose-400 text-white p-3 rounded-full shadow-md transition duration-200">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <input type="file" id="image-upload" accept="image/*" class="hidden">
-            </label>
-            <input
-                type="text"
-                id="new-message-input"
-                placeholder="Send message..."
-                class="flex-1 p-3 border border-rose-300 rounded-full focus:outline-none focus:ring-2 focus:ring-rose-400 transition duration-200 text-gray-700 placeholder-rose-400"
-            />
-            <button
-                id="send-message-button"
-                class="bg-gradient-to-r from-rose-500 to-purple-600 hover:from-rose-600 hover:to-purple-700 text-white font-semibold py-3 px-6 rounded-full shadow-lg transition duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-rose-400 focus:ring-offset-2"
-            >
-                Send
+            <button class="music-btn" id="music-btn" onclick="toggleMusic()">
+                <span class="music-icon">🎵</span>
+                <span id="music-label">Play music</span>
             </button>
         </div>
+
+        <div class="messages-area" id="message-area">
+            <div id="no-messages-placeholder">No sweet whispers yet. Send the first message! 🌸</div>
+        </div>
+
+        <div class="chat-input-area">
+            <label for="image-upload" class="img-upload-label" title="Send a photo">📷</label>
+            <input type="file" id="image-upload" accept="image/*" style="display:none;">
+            <input type="text" class="chat-input" id="new-message-input" placeholder="Whisper something sweet..."
+                   onkeydown="if(event.key==='Enter') handleSendMessage()">
+            <button class="send-btn" onclick="handleSendMessage()">➤</button>
+        </div>
     </div>
 
+    <!-- Background music (royalty-free romantic) -->
+    <audio id="bg-music" loop>
+        <source src="Maki - Dilaw (Lyrics)(MP3_160K).mp3" type="audio/mpeg">
+    </audio>
+
     <script type="module">
-        // Import Firebase modules from CDN
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
-        // Global Firebase instances and user ID
-        let app;
-        let db;
-        let auth;
-        let storage; // Add storage instance
+        const PIN = '0221';
+
+        let app, db, auth, storage;
         let userId = '';
+        let currentUser = 'Reyna';
+        let musicPlaying = false;
 
-        // DOM elements
-        const loadingScreen = document.getElementById('loading-screen');
-        const chatContainer = document.getElementById('chat-container');
-        const userIdDisplay = document.getElementById('user-id-display');
-        const messageArea = document.getElementById('message-area');
+        // DOM
+        const loadingScreen   = document.getElementById('loading-screen');
+        const gateEl          = document.getElementById('gate');
+        const chatroomEl      = document.getElementById('chatroom');
+        const userIdDisplay   = document.getElementById('logged-as-tag');
+        const messageArea     = document.getElementById('message-area');
         const newMessageInput = document.getElementById('new-message-input');
-        const sendMessageButton = document.getElementById('send-message-button');
-        const noMessagesPlaceholder = document.getElementById('no-messages-placeholder');
-        const imageUploadInput = document.getElementById('image-upload'); // New: Image upload input
+        const imageUpload     = document.getElementById('image-upload');
+        const noMsgHolder     = document.getElementById('no-messages-placeholder');
+        const bgMusic         = document.getElementById('bg-music');
 
-        // Function to scroll to the bottom of the message area
+        // ── Gate logic ──
+        window.selectName = function(name) {
+            currentUser = name;
+            document.getElementById('btn-reyna').className = 'name-btn' + (name === 'Reyna' ? ' selected' : '');
+            document.getElementById('btn-aaron').className = 'name-btn' + (name === 'Aaron' ? ' selected' : '');
+        };
+
+        window.clearErr = function() {
+            document.getElementById('err-msg').textContent = '';
+            document.getElementById('pin-input').classList.remove('error');
+        };
+
+        window.tryEnter = function() {
+            const pin = document.getElementById('pin-input').value.trim();
+            if (pin === PIN) {
+                gateEl.style.display = 'none';
+                chatroomEl.style.display = 'flex';
+                userIdDisplay.textContent = 'Logged in as ' + currentUser;
+                setupMessageListener();
+                autoPlayMusic();
+            } else {
+                const inp = document.getElementById('pin-input');
+                inp.classList.add('error');
+                document.getElementById('err-msg').textContent = 'Wrong PIN, sweetie 🙈 Try again!';
+                inp.value = '';
+                setTimeout(() => inp.classList.remove('error'), 400);
+            }
+        };
+
+        // ── Music ──
+        function autoPlayMusic() {
+            bgMusic.volume = 0.3;
+            bgMusic.play().then(() => {
+                musicPlaying = true;
+                document.getElementById('music-label').textContent = 'Pause music';
+            }).catch(() => {});
+        }
+
+        window.toggleMusic = function() {
+            if (musicPlaying) {
+                bgMusic.pause();
+                musicPlaying = false;
+                document.getElementById('music-label').textContent = 'Play music';
+            } else {
+                bgMusic.play();
+                musicPlaying = true;
+                document.getElementById('music-label').textContent = 'Pause music';
+            }
+        };
+
+        // ── Particles ──
+        function spawnParticles() {
+            const emojis = ['💕','✨','🌸','💜','🩷','⭐','💗'];
+            for (let i = 0; i < 6; i++) {
+                const p = document.createElement('span');
+                p.className = 'particle';
+                p.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                p.style.left = (Math.random() * 80 + 10) + 'vw';
+                p.style.bottom = '80px';
+                p.style.animationDelay = (Math.random() * 0.5) + 's';
+                document.body.appendChild(p);
+                setTimeout(() => p.remove(), 3000);
+            }
+        }
+
+        // ── Scroll ──
         function scrollToBottom() {
             messageArea.scrollTop = messageArea.scrollHeight;
         }
 
-        // Function to handle sending a new message
-        async function handleSendMessage() {
-            const messageText = newMessageInput.value.trim();
-            const imageFile = imageUploadInput.files[0]; // Get the selected image file
+        // ── Facebook-style smart timestamp ──
+        function formatDateLabel(date) {
+            const now = new Date();
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterday = new Date(today); yesterday.setDate(today.getDate() - 1);
+            const msgDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-            if (messageText === '' && !imageFile) return; // Don't send empty messages or if no file is selected
+            const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+            const diffMs = today - msgDay;
+            const diffDays = Math.round(diffMs / 86400000);
+
+            if (diffMs === 0) return 'Today';
+            if (diffMs === 86400000) return 'Yesterday';
+            if (diffDays < 7) return days[date.getDay()];
+            return date.toLocaleDateString([], { month: 'long', day: 'numeric', year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined });
+        }
+
+        function formatBubbleTime(date) {
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function formatFullTimestamp(date) {
+            const label = formatDateLabel(date);
+            const time = formatBubbleTime(date);
+            return `${label} at ${time}`;
+        }
+
+        function dateDividerKey(date) {
+            return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+        }
+
+        // ── Render message ──
+        let lastDateKey = null;
+
+        function renderMessage(msg) {
+            if (noMsgHolder) noMsgHolder.style.display = 'none';
+            const isMine = msg.userId === userId;
+            const displayName = isMine ? currentUser : (currentUser === 'Reyna' ? 'Aaron' : 'Reyna');
+            const avClass = displayName === 'Reyna' ? 'reyna' : 'aaron';
+            const avLetter = displayName.charAt(0);
+
+            // Date divider (like Facebook)
+            if (msg.timestamp) {
+                const d = msg.timestamp.toDate();
+                const key = dateDividerKey(d);
+                if (key !== lastDateKey) {
+                    lastDateKey = key;
+                    const divider = document.createElement('div');
+                    divider.className = 'date-divider';
+                    const label = document.createElement('span');
+                    label.textContent = formatDateLabel(d);
+                    divider.appendChild(label);
+                    messageArea.appendChild(divider);
+                }
+            }
+
+            const wrapper = document.createElement('div');
+            wrapper.style.display = 'flex';
+            wrapper.style.flexDirection = 'column';
+            wrapper.style.alignItems = isMine ? 'flex-end' : 'flex-start';
+
+            const row = document.createElement('div');
+            row.className = 'msg-row' + (isMine ? ' mine' : '');
+
+            const av = document.createElement('div');
+            av.className = `msg-avatar ${avClass}`;
+            av.textContent = avLetter;
+
+            const bubble = document.createElement('div');
+            bubble.className = `bubble ${isMine ? 'mine' : 'theirs'}`;
+
+            const nameEl = document.createElement('p');
+            nameEl.className = 'bubble-name';
+            nameEl.textContent = displayName;
+            bubble.appendChild(nameEl);
+
+            if (msg.imageUrl) {
+                const img = document.createElement('img');
+                img.src = msg.imageUrl;
+                img.alt = 'Shared photo';
+                img.className = 'bubble-img';
+                bubble.appendChild(img);
+            }
+
+            if (msg.text) {
+                const txt = document.createElement('p');
+                txt.style.margin = '0';
+                txt.textContent = msg.text;
+                bubble.appendChild(txt);
+            }
+
+            if (msg.timestamp) {
+                const d = msg.timestamp.toDate();
+                // Inline time (always visible, small)
+                const ts = document.createElement('p');
+                ts.className = 'bubble-time';
+                ts.textContent = formatBubbleTime(d);
+                bubble.appendChild(ts);
+
+                // Full timestamp on hover (Facebook style — shown below the row)
+                const fullTs = document.createElement('div');
+                fullTs.className = 'full-timestamp';
+                fullTs.textContent = formatFullTimestamp(d);
+                wrapper.appendChild(row);
+                wrapper.appendChild(fullTs);
+            } else {
+                wrapper.appendChild(row);
+            }
+
+            row.appendChild(av);
+            row.appendChild(bubble);
+            messageArea.appendChild(wrapper);
+            scrollToBottom();
+        }
+
+        // ── Send message ──
+        window.handleSendMessage = async function() {
+            const text = newMessageInput.value.trim();
+            const imageFile = imageUpload.files[0];
+            if (!text && !imageFile) return;
             if (!db || !userId) return;
 
             try {
@@ -121,154 +733,85 @@
                 let imageUrl = null;
 
                 if (imageFile) {
-                    // Upload image to Firebase Storage
                     const storageRef = ref(storage, `artifacts/${appId}/public/images/${Date.now()}_${imageFile.name}`);
                     const snapshot = await uploadBytes(storageRef, imageFile);
                     imageUrl = await getDownloadURL(snapshot.ref);
-                    imageUploadInput.value = ''; // Clear the file input
+                    imageUpload.value = '';
                 }
 
                 await addDoc(collection(db, `artifacts/${appId}/public/data/chat_messages`), {
-                    text: messageText,
-                    imageUrl: imageUrl, // Store image URL
-                    userId: userId,
+                    text,
+                    imageUrl,
+                    userId,
                     timestamp: serverTimestamp(),
                 });
-                newMessageInput.value = ''; // Clear the text input field
-            } catch (error) {
-                console.error("Error sending message:", error);
+
+                newMessageInput.value = '';
+                spawnParticles();
+            } catch (err) {
+                console.error('Error sending message:', err);
             }
+        };
+
+        // ── Firestore listener ──
+        function setupMessageListener() {
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const q = query(
+                collection(db, `artifacts/${appId}/public/data/chat_messages`),
+                orderBy('timestamp')
+            );
+            onSnapshot(q, (snapshot) => {
+                messageArea.innerHTML = '';
+                lastDateKey = null;
+                if (snapshot.empty) {
+                    messageArea.appendChild(noMsgHolder);
+                    noMsgHolder.style.display = 'block';
+                } else {
+                    snapshot.docs.forEach(doc => renderMessage(doc.data()));
+                }
+                scrollToBottom();
+            }, (err) => console.error('Snapshot error:', err));
         }
 
-        // Initialize Firebase and set up listeners
-        window.onload = async function () {
+        // ── Firebase init ──
+        window.onload = async function() {
             try {
-                const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-                    apiKey: "AIzaSyB5QsjH9wMINY2tHWpoycJUsqBCyw-9ihw",
-                    authDomain: "chat-9e913.firebaseapp.com",
-                    projectId: "chat-9e913",
-                    storageBucket: "chat-9e913.firebasestorage.app",
-                    messagingSenderId: "472247605564",
-                    appId: "1:472247605564:web:ef37cb5c32f0eae53ba639",
-                    measurementId: "G-WQN587GL9B"
-                };
-                const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+                const firebaseConfig = typeof __firebase_config !== 'undefined'
+                    ? JSON.parse(__firebase_config)
+                    : {
+                        apiKey: "AIzaSyB5QsjH9wMINY2tHWpoycJUsqBCyw-9ihw",
+                        authDomain: "chat-9e913.firebaseapp.com",
+                        projectId: "chat-9e913",
+                        storageBucket: "chat-9e913.firebasestorage.app",
+                        messagingSenderId: "472247605564",
+                        appId: "1:472247605564:web:ef37cb5c32f0eae53ba639",
+                        measurementId: "G-WQN587GL9B"
+                    };
+
                 const initialAuthToken = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
 
-                // Initialize Firebase app
-                app = initializeApp(firebaseConfig);
-                db = getFirestore(app);
-                auth = getAuth(app);
-                storage = getStorage(app); // Initialize storage
+                app     = initializeApp(firebaseConfig);
+                db      = getFirestore(app);
+                auth    = getAuth(app);
+                storage = getStorage(app);
 
-                // Sign in with custom token or anonymously
                 if (initialAuthToken) {
                     await signInWithCustomToken(auth, initialAuthToken);
                 } else {
                     await signInAnonymously(auth);
                 }
 
-                // Listen for authentication state changes
                 onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        userId = user.uid;
-                        userIdDisplay.textContent = userId;
-                    } else {
-                        // Fallback if anonymous sign-in somehow fails (shouldn't happen often)
-                        userId = crypto.randomUUID();
-                        userIdDisplay.textContent = userId;
-                    }
-                    loadingScreen.classList.add('hidden'); // Hide loading screen
-                    chatContainer.classList.remove('hidden'); // Show chat container
-                    setupMessageListener(); // Start listening for messages once authenticated
+                    userId = user ? user.uid : crypto.randomUUID();
+                    loadingScreen.style.display = 'none';
+                    gateEl.style.display = 'block';
                 });
 
-            } catch (error) {
-                console.error("Error initializing Firebase:", error);
-                loadingScreen.textContent = "Error loading chat. Please try again. Check console for details."; // Display error
+            } catch (err) {
+                console.error('Firebase init error:', err);
+                loadingScreen.innerHTML = '<div style="color:#c0396a;font-family:Poppins,sans-serif;padding:2rem;text-align:center;">Could not connect. Check console.</div>';
             }
         };
-
-        // Function to set up real-time message listener
-        function setupMessageListener() {
-            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
-            const messagesCollectionRef = collection(db, `artifacts/${appId}/public/data/chat_messages`);
-            const q = query(messagesCollectionRef, orderBy('timestamp'));
-
-            onSnapshot(q, (snapshot) => {
-                // Clear existing messages before rendering new ones
-                messageArea.innerHTML = '';
-
-                if (snapshot.empty) {
-                    noMessagesPlaceholder.classList.remove('hidden');
-                    messageArea.appendChild(noMessagesPlaceholder);
-                } else {
-                    noMessagesPlaceholder.classList.add('hidden');
-                    snapshot.docs.forEach(doc => {
-                        const msg = doc.data();
-                        const messageElement = document.createElement('div');
-                        messageElement.className = `flex ${msg.userId === userId ? 'justify-end' : 'justify-start'}`;
-
-                        const messageBubble = document.createElement('div');
-                        messageBubble.className = `max-w-[70%] p-3 rounded-xl shadow-md ${
-                            msg.userId === userId
-                                ? 'bg-purple-400 text-white rounded-br-none'
-                                : 'bg-pink-200 text-purple-800 rounded-bl-none'
-                        }`;
-
-                        const senderText = document.createElement('p');
-                        senderText.className = 'font-semibold text-sm';
-                        senderText.textContent = msg.userId === userId ? 'Me' : `My Love (${msg.userId.substring(0, 8)}...)`;
-
-                        messageBubble.appendChild(senderText);
-
-                        // Display image if available
-                        if (msg.imageUrl) {
-                            const imgElement = document.createElement('img');
-                            imgElement.src = msg.imageUrl;
-                            imgElement.alt = "Sent image";
-                            imgElement.className = 'max-w-full h-auto rounded-md mt-2 mb-2'; // Tailwind classes for image
-                            messageBubble.appendChild(imgElement);
-                        }
-
-                        // Display text message if available
-                        if (msg.text) {
-                            const messageContent = document.createElement('p');
-                            messageContent.className = 'mt-1 text-base break-words';
-                            messageContent.textContent = msg.text;
-                            messageBubble.appendChild(messageContent);
-                        }
-                        
-                        const timestampText = document.createElement('p');
-                        timestampText.className = 'text-xs opacity-80 mt-1 text-right';
-                        if (msg.timestamp) {
-                            const date = msg.timestamp.toDate();
-                            // Format date and time
-                            timestampText.textContent = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                        }
-                        messageBubble.appendChild(timestampText);
-                        
-                        messageElement.appendChild(messageBubble);
-                        messageArea.appendChild(messageElement);
-                    });
-                }
-                scrollToBottom(); // Scroll to the latest message after rendering
-            }, (error) => {
-                console.error("Error fetching messages:", error);
-            });
-        }
-
-        // Event Listeners
-        sendMessageButton.addEventListener('click', handleSendMessage);
-        newMessageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                handleSendMessage();
-            }
-        });
-        // Listen for changes on the image input to allow sending with just an image
-        imageUploadInput.addEventListener('change', () => {
-            // Optionally, you can add a visual indicator here that a file is selected
-        });
     </script>
 </body>
 </html>
