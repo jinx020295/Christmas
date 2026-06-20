@@ -575,10 +575,19 @@
         // ── Music ──
         function autoPlayMusic() {
             bgMusic.volume = 0.3;
-            bgMusic.play().then(() => {
-                musicPlaying = true;
-                document.getElementById('music-label').textContent = 'Pause music';
-            }).catch(() => {});
+            // Play is called directly from a user gesture (button click = PIN enter)
+            // so browsers allow it — no autoplay block
+            const playPromise = bgMusic.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                    musicPlaying = true;
+                    document.getElementById('music-label').textContent = 'Pause music';
+                }).catch(() => {
+                    // Still blocked (e.g. data saver mode) — show Play button so user can tap
+                    musicPlaying = false;
+                    document.getElementById('music-label').textContent = 'Play music';
+                });
+            }
         }
 
         window.toggleMusic = function() {
